@@ -1,0 +1,32 @@
+{
+  "name": "bbh-chatbox-widget-js-sdk",
+  "version": "1.0.0",
+  "description": "Tích hợp với nền tảng Chat - Bot Bán Hàng",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "dev": "ts-node-dev src/index.ts",
+    "build": "rimraf ./build && tsc",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbhminhnl/bbh-chatbox-widget-js-sdk-sdk.git"
+  },
+  "author": "Andrew Nguyen <minhnl@botbanhang.vn>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash": "^4.14.191",
+    "@types/node": "^18.11.18",
+    "rimraf": "^3.0.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "axios": "^1.3.4",
+    "lodash": "^4.17.21"
+  }
+}
