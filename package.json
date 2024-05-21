@@ -1,6 +1,6 @@
 {
   "name": "bbh-chatbox-widget-js-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tích hợp với nền tảng Chat - Bot Bán Hàng",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "rimraf ./build && tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "deploy": "./deploy.sh"
   },
   "repository": {
     "type": "git",
