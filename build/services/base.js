@@ -25,7 +25,7 @@ class Base {
     }
     static getInstance(...args) {
         if (!__classPrivateFieldGet(Base, _a, "f", _Base_instance))
-            __classPrivateFieldSet(Base, _a, new Base(...args), "f", _Base_instance);
+            __classPrivateFieldSet(Base, _a, new this(...args), "f", _Base_instance);
         return __classPrivateFieldGet(Base, _a, "f", _Base_instance);
     }
     debug(...args) {

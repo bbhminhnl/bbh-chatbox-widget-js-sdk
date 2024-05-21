@@ -23,7 +23,7 @@ export class Base {
     /**singleton */
     public static getInstance<T extends Base>(...args: any[]): T {
         // nếu chưa có instance thì tạo mới
-        if (!Base.#instance) Base.#instance = new Base(...args)
+        if (!Base.#instance) Base.#instance = new this(...args)
 
         /**
          * trả về instance

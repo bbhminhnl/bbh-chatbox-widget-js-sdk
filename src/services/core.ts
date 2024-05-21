@@ -19,7 +19,7 @@ export class WidgetCore extends Base {
     /**token của chatbot */
     protected _chatbot_token?: string
 
-    constructor(secret_key?: string) {
+    constructor(secret_key: string) {
         // thiet lập title khi log
         super('WidgetCore')
 

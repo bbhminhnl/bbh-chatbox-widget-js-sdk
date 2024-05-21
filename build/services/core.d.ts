@@ -8,7 +8,7 @@ export declare class WidgetCore extends Base {
     protected _page_id?: string;
     protected _client_id?: string;
     protected _chatbot_token?: string;
-    constructor(secret_key?: string);
+    constructor(secret_key: string);
     get access_token(): string | undefined;
     get is_admin(): boolean | undefined;
     set access_token(value: string | undefined);
