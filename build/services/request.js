@@ -28,28 +28,41 @@ exports.CHATBOT_SERVER = exports.WIDGET_SERVER = exports.APP_SERVER = exports.Re
 const axios_1 = __importDefault(require("axios"));
 const base_1 = require("./base");
 const constant_1 = require("../constant");
+/**quản lý việc gọi http API đến Bot Bán Hàng */
 class Request extends base_1.Base {
     constructor(host, headers) {
+        // thiet lập title khi log
         super('Request');
         _Request_instances.add(this);
+        /**máy chủ kết nối */
         _Request_HOST.set(this, void 0);
+        /**các header mặc định */
         _Request_headers.set(this, void 0);
+        // thiet lập host
         __classPrivateFieldSet(this, _Request_HOST, constant_1.DOMAIN === null || constant_1.DOMAIN === void 0 ? void 0 : constant_1.DOMAIN[host], "f");
+        // thiet lập headers
         __classPrivateFieldSet(this, _Request_headers, headers, "f");
     }
+    /**thay đổi giá trị header mặc định */
     set headers(value) {
         __classPrivateFieldSet(this, _Request_headers, value, "f");
     }
+    /**gọi API theo phương thức POST */
     post(path, body) {
         var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                /**đường dẫn của API */
                 const URI = __classPrivateFieldGet(this, _Request_instances, "m", _Request_genUri).call(this, path);
+                /**các options để gọi API */
                 const OPTIONS = __classPrivateFieldGet(this, _Request_instances, "m", _Request_genOptions).call(this);
+                // gọi API
                 const RES = yield axios_1.default.post(URI, body, OPTIONS);
+                // trả về dữ liệu
                 return ((_a = RES === null || RES === void 0 ? void 0 : RES.data) === null || _a === void 0 ? void 0 : _a.data) || (RES === null || RES === void 0 ? void 0 : RES.data) || RES;
             }
             catch (e) {
+                // trả về lỗi
                 throw ((_c = (_b = e === null || e === void 0 ? void 0 : e.response) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.message) ||
                     ((_d = e === null || e === void 0 ? void 0 : e.response) === null || _d === void 0 ? void 0 : _d.data) ||
                     (e === null || e === void 0 ? void 0 : e.response) ||
@@ -61,6 +74,9 @@ class Request extends base_1.Base {
 }
 exports.Request = Request;
 _Request_HOST = new WeakMap(), _Request_headers = new WeakMap(), _Request_instances = new WeakSet(), _Request_genUri = function _Request_genUri(path) { return `${__classPrivateFieldGet(this, _Request_HOST, "f")}/${path}`; }, _Request_genOptions = function _Request_genOptions() { return { headers: __classPrivateFieldGet(this, _Request_headers, "f") }; };
+/**máy chủ chính */
 exports.APP_SERVER = Request.getInstance('APP');
+/**máy chủ phụ */
 exports.WIDGET_SERVER = Request.getInstance('WIDGET');
+/**máy chủ chatbot */
 exports.CHATBOT_SERVER = Request.getInstance('CHATBOT');

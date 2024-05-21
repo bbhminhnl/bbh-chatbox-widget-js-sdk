@@ -12,17 +12,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WidgetChatbot = void 0;
 const request_1 = require("./request");
 const setting_1 = require("./setting");
+/**quản lý tương tác giữa widget và chatbot */
 class WidgetChatbot extends setting_1.WidgetConfig {
+    /**gửi tin nhắn tới khách hàng thông qua chatbot */
     triggerChatbot(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.debug('gửi tin nhắn tới khách hàng', data);
+                /**kết quả sau khi gửi tin nhắn */
                 const RES = yield request_1.CHATBOT_SERVER.post('public/json', Object.assign({ access_token: this._chatbot_token, client_id: this._client_id, page_id: this._page_id }, data));
                 this.debug('gửi tin nhắn thành công', RES);
+                // trả về dữ liệu
                 return RES;
             }
             catch (e) {
                 this.error('gửi tin nhắn thất bại', e);
+                // trả về lỗi
                 throw e;
             }
         });

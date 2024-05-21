@@ -18,79 +18,107 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.WidgetCore = void 0;
 const base_1 = require("./base");
 const request_1 = require("./request");
+/**quản lý tương tác giữa widget và nền tảng Chat - Bot Bán Hàng*/
 class WidgetCore extends base_1.Base {
-    constructor(secret_key) {
-        super('WidgetCore');
+    constructor() {
+        super(...arguments);
         _WidgetCore_instances.add(this);
-        if (!secret_key)
-            throw 'Yêu cầu mã bí mật của widget';
-        this._SECRET_KEY = secret_key;
     }
+    /**lấy ra dữ liệu mã truy cập hiện tại */
     get access_token() { return this._access_token; }
+    /**nhân viên có phải là admin không */
     get is_admin() { return this._is_admin; }
+    /**thay đổi giá trị của mã truy cập thủ công */
     set access_token(value) {
         this._access_token = value;
     }
-    load() {
+    /**khởi động widget chatbox */
+    load(secret_key) {
         try {
+            // kiểm tra đầu vào
+            if (!secret_key)
+                throw 'Yêu cầu mã bí mật của widget';
+            // nhập dữ liệu khoá bí mật
+            this._secret_key = secret_key;
+            // nạp access_token từ query string
             __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadAccessToken).call(this);
+            // nạp trạng thái admin trang ban đầu
             __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadAdminStatus).call(this);
             this.debug('Khởi động Widget thành công!');
         }
         catch (e) {
+            this.error('Khởi động Widget thất bại', e);
             throw e;
         }
     }
+    /**thực hiện xác thực với Bot Bán Hàng */
     oAuth(token_partner) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.debug('Thực hiện xác thực với Bot Bán Hàng');
+                // gửi yêu cầu xác thực
                 const RES = yield request_1.APP_SERVER.post('app/app-installed/update', {
                     access_token: this._access_token,
                     token_partner: token_partner || 'active',
                     _type: 'oauth-access-token'
                 });
                 this.debug('Xác thực thành công', RES);
+                // trả về dữ liệu
                 return RES;
             }
             catch (e) {
                 this.error('Xác thực thất bại', e);
+                // trả về lỗi
                 throw e;
             }
         });
     }
+    /**giải mã thông tin khách hàng */
     decodeClient() {
         var _b;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.debug('Thực hiện giải mã thông tin khách hàng');
+                /**dữ liệu giải mã được */
                 const RES = yield request_1.APP_SERVER.post('service/partner-authenticate', {
                     access_token: this._access_token,
-                    secret_key: this._SECRET_KEY
+                    secret_key: this._secret_key
                 });
+                // lưu lại id của khách hàng hiện tại
                 this._client_id = (_b = RES === null || RES === void 0 ? void 0 : RES.public_profile) === null || _b === void 0 ? void 0 : _b.fb_client_id;
+                // TODO lưu lại token của chatbot mới
+                // server mới chưa trả về chatbot token
+                // this._chatbot_token = 
                 this.debug('Giải mã thành công', RES);
                 return RES;
             }
             catch (e) {
                 this.error('Giải mã thông tin khách hàng thất bại', e);
+                // trả về lỗi
                 throw e;
             }
         });
     }
+    /**nạp lại access_token mỗi khi thay đổi khách hàng trong trang */
     onEvent(proceed) {
         this.debug('Bắt đầu lắng nghe sự kiện thay đổi khách hàng');
-        window.addEventListener('message', ($event) => {
+        // reload dữ liệu không cần load lại toàn bộ widget
+        globalThis.window.addEventListener('message', ($event) => {
             var _b, _c, _d, _e, _f, _g;
+            // chỉ xử lý event từ chatbox
             if (((_b = $event === null || $event === void 0 ? void 0 : $event.data) === null || _b === void 0 ? void 0 : _b.from) !== 'CHATBOX')
                 return;
             this.debug('Nhận được sự kiện từ Chatbox', $event === null || $event === void 0 ? void 0 : $event.data);
+            // nạp lại mã truy cập mới
             if (((_c = $event === null || $event === void 0 ? void 0 : $event.data) === null || _c === void 0 ? void 0 : _c.type) === 'RELOAD' &&
                 ((_e = (_d = $event === null || $event === void 0 ? void 0 : $event.data) === null || _d === void 0 ? void 0 : _d.payload) === null || _e === void 0 ? void 0 : _e.access_token)) {
+                // nạp lại mã truy cập
                 this._access_token = (_g = (_f = $event === null || $event === void 0 ? void 0 : $event.data) === null || _f === void 0 ? void 0 : _f.payload) === null || _g === void 0 ? void 0 : _g.access_token;
+                // cập nhật lại header cho WIDGET_SERVER
                 request_1.WIDGET_SERVER.headers = { Authorization: this._access_token };
                 this.debug('Đã nạp lại mã truy cập');
             }
+            // gọi hàm tiếp theo nếu có
             if (proceed)
                 proceed(null, $event === null || $event === void 0 ? void 0 : $event.data);
         });
@@ -98,7 +126,8 @@ class WidgetCore extends base_1.Base {
 }
 exports.WidgetCore = WidgetCore;
 _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryString = function _WidgetCore_getQueryString(field) {
-    return new URLSearchParams(window.location.search).get(field);
+    var _b, _c;
+    return new URLSearchParams((_c = (_b = globalThis.window) === null || _b === void 0 ? void 0 : _b.location) === null || _c === void 0 ? void 0 : _c.search).get(field);
 }, _WidgetCore_toBoolean = function _WidgetCore_toBoolean(value) {
     let result = false;
     try {
@@ -108,9 +137,12 @@ _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryStri
     return result;
 }, _WidgetCore_loadAccessToken = function _WidgetCore_loadAccessToken() {
     try {
+        /**lấy mã truy cập từ query string */
         const ACCESS_TOKEN = __classPrivateFieldGet(WidgetCore, _a, "m", _WidgetCore_getQueryString).call(WidgetCore, 'access_token');
+        // kiểm tra đầu vào
         if (!ACCESS_TOKEN)
             throw 'Không tìm thấy mã truy cập';
+        // nạp dữ liệu mã truy cập
         this._access_token = ACCESS_TOKEN;
         this.debug('Đã phát hiện mã truy cập', this._access_token);
     }
@@ -119,7 +151,9 @@ _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryStri
     }
 }, _WidgetCore_loadAdminStatus = function _WidgetCore_loadAdminStatus() {
     try {
+        /**lấy giá trị trạng thái admin từ query string */
         const RAW_IS_ADMIN = __classPrivateFieldGet(WidgetCore, _a, "m", _WidgetCore_getQueryString).call(WidgetCore, 'is_page_admin');
+        // nạp dữ liệu trạng thái admin
         this._is_admin = __classPrivateFieldGet(WidgetCore, _a, "m", _WidgetCore_toBoolean).call(WidgetCore, RAW_IS_ADMIN);
         this.debug(this._is_admin ?
             'Nhân viên là admin trang' :

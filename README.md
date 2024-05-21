@@ -13,13 +13,13 @@ SDK này giúp đối tác xây dựng widget để tích hợp với nền tả
 Sử dụng pnpm để cài đặt SDK:
 
 ```bash
-pnpm i git+https://github.com/bbhminhnl/bbh-chatbox-widget-js-sdk-sdk.git
+pnpm i git+https://github.com/bbhminhnl/bbh-chatbox-widget-js-sdk.git
 ```
 
 Sử dụng npm để cài đặt SDK:
 
 ```bash
-npm i git+https://github.com/bbhminhnl/bbh-chatbox-widget-js-sdk-sdk.git
+npm i git+https://github.com/bbhminhnl/bbh-chatbox-widget-js-sdk.git
 ```
 
 ## Sử dụng

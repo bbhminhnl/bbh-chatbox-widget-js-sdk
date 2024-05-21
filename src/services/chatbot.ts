@@ -32,6 +32,3 @@ export class WidgetChatbot extends WidgetConfig {
 
     }
 }
-
-
-

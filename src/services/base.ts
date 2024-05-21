@@ -13,7 +13,7 @@ export class Base {
     #debug_mode: boolean = false
 
     /**singleton */
-    static #instance: Base
+    static #instance: Record<string, Base> = {}
 
     constructor(me?: string) {
         // khởi tạo title
@@ -23,13 +23,14 @@ export class Base {
     /**singleton */
     public static getInstance<T extends Base>(...args: any[]): T {
         // nếu chưa có instance thì tạo mới
-        if (!Base.#instance) Base.#instance = new this(...args)
+        if (!Base.#instance?.[this.name])
+            Base.#instance[this.name] = new this(...args)
 
         /**
          * trả về instance
          * - dùng as để ép kiểu cho class con thực tế đang sử dụng singleton
          */
-        return Base.#instance as T
+        return Base.#instance?.[this.name] as T
     }
 
     /**khởi tạo title cho logging */

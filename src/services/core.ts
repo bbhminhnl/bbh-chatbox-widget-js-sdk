@@ -6,8 +6,7 @@ import type { ChatboxEvent, CustomerInfo } from '../interface'
 /**quản lý tương tác giữa widget và nền tảng Chat - Bot Bán Hàng*/
 export class WidgetCore extends Base {
     /**khóa bí mật của widget, dùng để xác thực khi giải mã dữ liệu khách hàng */
-    protected readonly _SECRET_KEY: string
-
+    protected _secret_key?: string
     /**mã truy cập để oauth hoặc giải mã dữ liệu */
     protected _access_token?: string
     /**nhân viên hiện tại có phải là admin của trang không */
@@ -18,17 +17,6 @@ export class WidgetCore extends Base {
     protected _client_id?: string
     /**token của chatbot */
     protected _chatbot_token?: string
-
-    constructor(secret_key: string) {
-        // thiet lập title khi log
-        super('WidgetCore')
-
-        // kiểm tra đầu vào
-        if (!secret_key) throw 'Yêu cầu mã bí mật của widget'
-
-        // nhập dữ liệu
-        this._SECRET_KEY = secret_key
-    }
 
     /**lấy ra dữ liệu mã truy cập hiện tại */
     get access_token() { return this._access_token }
@@ -41,7 +29,9 @@ export class WidgetCore extends Base {
 
     /**Lấy giá trị của trường query từ URL */
     static #getQueryString(field: string): string | null {
-        return new URLSearchParams(window.location.search).get(field)
+        return new URLSearchParams(
+            globalThis.window?.location?.search
+        ).get(field)
     }
     /**Chuyển đổi giá trị thành kiểu boolean */
     static #toBoolean(value?: any): boolean {
@@ -89,8 +79,14 @@ export class WidgetCore extends Base {
     }
 
     /**khởi động widget chatbox */
-    public load(): void {
+    public load(secret_key: string): void {
         try {
+            // kiểm tra đầu vào
+            if (!secret_key) throw 'Yêu cầu mã bí mật của widget'
+
+            // nhập dữ liệu khoá bí mật
+            this._secret_key = secret_key
+
             // nạp access_token từ query string
             this.#loadAccessToken()
 
@@ -99,6 +95,8 @@ export class WidgetCore extends Base {
 
             this.debug('Khởi động Widget thành công!')
         } catch (e) {
+            this.error('Khởi động Widget thất bại', e)
+
             throw e
         }
     }
@@ -138,7 +136,7 @@ export class WidgetCore extends Base {
                 'service/partner-authenticate',
                 {
                     access_token: this._access_token,
-                    secret_key: this._SECRET_KEY
+                    secret_key: this._secret_key
                 },
             )
 
@@ -164,28 +162,31 @@ export class WidgetCore extends Base {
         this.debug('Bắt đầu lắng nghe sự kiện thay đổi khách hàng')
 
         // reload dữ liệu không cần load lại toàn bộ widget
-        window.addEventListener('message', ($event: MessageEvent<ChatboxEvent>) => {
-            // chỉ xử lý event từ chatbox
-            if ($event?.data?.from !== 'CHATBOX') return
+        globalThis.window.addEventListener(
+            'message',
+            ($event: MessageEvent<ChatboxEvent>) => {
+                // chỉ xử lý event từ chatbox
+                if ($event?.data?.from !== 'CHATBOX') return
 
-            this.debug('Nhận được sự kiện từ Chatbox', $event?.data)
+                this.debug('Nhận được sự kiện từ Chatbox', $event?.data)
 
-            // nạp lại mã truy cập mới
-            if (
-                $event?.data?.type === 'RELOAD' &&
-                $event?.data?.payload?.access_token
-            ) {
-                // nạp lại mã truy cập
-                this._access_token = $event?.data?.payload?.access_token
+                // nạp lại mã truy cập mới
+                if (
+                    $event?.data?.type === 'RELOAD' &&
+                    $event?.data?.payload?.access_token
+                ) {
+                    // nạp lại mã truy cập
+                    this._access_token = $event?.data?.payload?.access_token
 
-                // cập nhật lại header cho WIDGET_SERVER
-                WIDGET_SERVER.headers = { Authorization: this._access_token }
+                    // cập nhật lại header cho WIDGET_SERVER
+                    WIDGET_SERVER.headers = { Authorization: this._access_token }
 
-                this.debug('Đã nạp lại mã truy cập')
+                    this.debug('Đã nạp lại mã truy cập')
+                }
+
+                // gọi hàm tiếp theo nếu có
+                if (proceed) proceed(null, $event?.data)
             }
-
-            // gọi hàm tiếp theo nếu có
-            if (proceed) proceed(null, $event?.data)
-        })
+        )
     }
 }
