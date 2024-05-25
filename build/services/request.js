@@ -22,7 +22,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _Request_instances, _Request_HOST, _Request_headers, _Request_genUri, _Request_genOptions;
+var _Request_instances, _a, _Request_HOST, _Request_headers, _Request_instance, _Request_genUri, _Request_genOptions;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CHATBOT_SERVER = exports.WIDGET_SERVER = exports.APP_SERVER = exports.Request = void 0;
 const axios_1 = __importDefault(require("axios"));
@@ -43,13 +43,22 @@ class Request extends base_1.Base {
         // thiet lập headers
         __classPrivateFieldSet(this, _Request_headers, headers, "f");
     }
+    /**singleton */
+    static getInstanceByHost(host, headers) {
+        var _b, _c;
+        // nếu chưa có instance thì tạo mới
+        if (!((_b = __classPrivateFieldGet(Request, _a, "f", _Request_instance)) === null || _b === void 0 ? void 0 : _b[host]))
+            __classPrivateFieldGet(Request, _a, "f", _Request_instance)[host] = new Request(host, headers);
+        // trả về instance
+        return (_c = __classPrivateFieldGet(Request, _a, "f", _Request_instance)) === null || _c === void 0 ? void 0 : _c[host];
+    }
     /**thay đổi giá trị header mặc định */
     set headers(value) {
         __classPrivateFieldSet(this, _Request_headers, value, "f");
     }
     /**gọi API theo phương thức POST */
     post(path, body) {
-        var _a, _b, _c, _d;
+        var _b, _c, _d, _e;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 /**đường dẫn của API */
@@ -59,12 +68,12 @@ class Request extends base_1.Base {
                 // gọi API
                 const RES = yield axios_1.default.post(URI, body, OPTIONS);
                 // trả về dữ liệu
-                return ((_a = RES === null || RES === void 0 ? void 0 : RES.data) === null || _a === void 0 ? void 0 : _a.data) || (RES === null || RES === void 0 ? void 0 : RES.data) || RES;
+                return ((_b = RES === null || RES === void 0 ? void 0 : RES.data) === null || _b === void 0 ? void 0 : _b.data) || (RES === null || RES === void 0 ? void 0 : RES.data) || RES;
             }
             catch (e) {
                 // trả về lỗi
-                throw ((_c = (_b = e === null || e === void 0 ? void 0 : e.response) === null || _b === void 0 ? void 0 : _b.data) === null || _c === void 0 ? void 0 : _c.message) ||
-                    ((_d = e === null || e === void 0 ? void 0 : e.response) === null || _d === void 0 ? void 0 : _d.data) ||
+                throw ((_d = (_c = e === null || e === void 0 ? void 0 : e.response) === null || _c === void 0 ? void 0 : _c.data) === null || _d === void 0 ? void 0 : _d.message) ||
+                    ((_e = e === null || e === void 0 ? void 0 : e.response) === null || _e === void 0 ? void 0 : _e.data) ||
                     (e === null || e === void 0 ? void 0 : e.response) ||
                     (e === null || e === void 0 ? void 0 : e.message) ||
                     e;
@@ -73,10 +82,12 @@ class Request extends base_1.Base {
     }
 }
 exports.Request = Request;
-_Request_HOST = new WeakMap(), _Request_headers = new WeakMap(), _Request_instances = new WeakSet(), _Request_genUri = function _Request_genUri(path) { return `${__classPrivateFieldGet(this, _Request_HOST, "f")}/${path}`; }, _Request_genOptions = function _Request_genOptions() { return { headers: __classPrivateFieldGet(this, _Request_headers, "f") }; };
+_a = Request, _Request_HOST = new WeakMap(), _Request_headers = new WeakMap(), _Request_instances = new WeakSet(), _Request_genUri = function _Request_genUri(path) { return `${__classPrivateFieldGet(this, _Request_HOST, "f")}/${path}`; }, _Request_genOptions = function _Request_genOptions() { return { headers: __classPrivateFieldGet(this, _Request_headers, "f") }; };
+/**singleton */
+_Request_instance = { value: {} };
 /**máy chủ chính */
-exports.APP_SERVER = Request.getInstance('APP');
+exports.APP_SERVER = Request.getInstanceByHost('APP');
 /**máy chủ phụ */
-exports.WIDGET_SERVER = Request.getInstance('WIDGET');
+exports.WIDGET_SERVER = Request.getInstanceByHost('WIDGET');
 /**máy chủ chatbot */
-exports.CHATBOT_SERVER = Request.getInstance('CHATBOT');
+exports.CHATBOT_SERVER = Request.getInstanceByHost('CHATBOT');

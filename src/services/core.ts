@@ -24,7 +24,11 @@ export class WidgetCore extends Base {
     get is_admin() { return this._is_admin }
     /**thay đổi giá trị của mã truy cập thủ công */
     set access_token(value: string | undefined) {
+        // cập nhật giá trị mới
         this._access_token = value
+
+        // cập nhật lại header cho WIDGET_SERVER
+        WIDGET_SERVER.headers = { Authorization: this._access_token }
     }
 
     /**Lấy giá trị của trường query từ URL */
@@ -52,7 +56,7 @@ export class WidgetCore extends Base {
             if (!ACCESS_TOKEN) throw 'Không tìm thấy mã truy cập'
 
             // nạp dữ liệu mã truy cập
-            this._access_token = ACCESS_TOKEN
+            this.access_token = ACCESS_TOKEN
 
             this.debug('Đã phát hiện mã truy cập', this._access_token)
         } catch (e) {
@@ -176,10 +180,7 @@ export class WidgetCore extends Base {
                     $event?.data?.payload?.access_token
                 ) {
                     // nạp lại mã truy cập
-                    this._access_token = $event?.data?.payload?.access_token
-
-                    // cập nhật lại header cho WIDGET_SERVER
-                    WIDGET_SERVER.headers = { Authorization: this._access_token }
+                    this.access_token = $event?.data?.payload?.access_token
 
                     this.debug('Đã nạp lại mã truy cập')
                 }

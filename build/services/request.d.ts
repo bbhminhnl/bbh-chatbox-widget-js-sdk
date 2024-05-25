@@ -5,6 +5,8 @@ import type { RawAxiosRequestHeaders } from 'axios';
 export declare class Request extends Base {
     #private;
     constructor(host: keyof typeof DOMAIN, headers?: RawAxiosRequestHeaders);
+    /**singleton */
+    static getInstanceByHost(host: keyof typeof DOMAIN, headers?: RawAxiosRequestHeaders): Request;
     /**thay đổi giá trị header mặc định */
     set headers(value: RawAxiosRequestHeaders | undefined);
     /**gọi API theo phương thức POST */
