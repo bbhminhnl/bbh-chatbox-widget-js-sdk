@@ -12,7 +12,7 @@ export class WidgetConfig extends WidgetCore {
     }
 
     /**lưu cấu hình của widget */
-    public async saveConfig(data: SaveConfig): Promise<void> {
+    public async saveConfig(data: SaveConfig): Promise<any> {
         try {
             this.debug('lưu thiết lập', data)
 
@@ -31,7 +31,7 @@ export class WidgetConfig extends WidgetCore {
         }
     }
     /**Xóa thiết lập */
-    public async deleteConfig(input: ConfigBase): Promise<void> {
+    public async deleteConfig(input: ConfigBase): Promise<any> {
         try {
             this.debug('Xóa thiết lập', input)
 
@@ -53,7 +53,7 @@ export class WidgetConfig extends WidgetCore {
         }
     }
     /**đọc thiết lập */
-    public async getConfig(data: ConfigBase): Promise<void> {
+    public async getConfig(data: ConfigBase): Promise<any> {
         try {
             this.debug('đọc thiết lập', data)
 

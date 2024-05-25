@@ -30,7 +30,10 @@ class WidgetCore extends base_1.Base {
     get is_admin() { return this._is_admin; }
     /**thay đổi giá trị của mã truy cập thủ công */
     set access_token(value) {
+        // cập nhật giá trị mới
         this._access_token = value;
+        // cập nhật lại header cho WIDGET_SERVER
+        request_1.WIDGET_SERVER.headers = { Authorization: this._access_token };
     }
     /**khởi động widget chatbox */
     load(secret_key) {
@@ -113,9 +116,7 @@ class WidgetCore extends base_1.Base {
             if (((_c = $event === null || $event === void 0 ? void 0 : $event.data) === null || _c === void 0 ? void 0 : _c.type) === 'RELOAD' &&
                 ((_e = (_d = $event === null || $event === void 0 ? void 0 : $event.data) === null || _d === void 0 ? void 0 : _d.payload) === null || _e === void 0 ? void 0 : _e.access_token)) {
                 // nạp lại mã truy cập
-                this._access_token = (_g = (_f = $event === null || $event === void 0 ? void 0 : $event.data) === null || _f === void 0 ? void 0 : _f.payload) === null || _g === void 0 ? void 0 : _g.access_token;
-                // cập nhật lại header cho WIDGET_SERVER
-                request_1.WIDGET_SERVER.headers = { Authorization: this._access_token };
+                this.access_token = (_g = (_f = $event === null || $event === void 0 ? void 0 : $event.data) === null || _f === void 0 ? void 0 : _f.payload) === null || _g === void 0 ? void 0 : _g.access_token;
                 this.debug('Đã nạp lại mã truy cập');
             }
             // gọi hàm tiếp theo nếu có
@@ -143,7 +144,7 @@ _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryStri
         if (!ACCESS_TOKEN)
             throw 'Không tìm thấy mã truy cập';
         // nạp dữ liệu mã truy cập
-        this._access_token = ACCESS_TOKEN;
+        this.access_token = ACCESS_TOKEN;
         this.debug('Đã phát hiện mã truy cập', this._access_token);
     }
     catch (e) {
