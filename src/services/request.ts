@@ -12,6 +12,9 @@ export class Request extends Base {
     /**các header mặc định */
     #headers?: RawAxiosRequestHeaders
 
+    /**singleton */
+    static #instance: Record<string, Request> = {}
+
     constructor(host: keyof typeof DOMAIN, headers?: RawAxiosRequestHeaders) {
         // thiet lập title khi log
         super('Request')
@@ -21,6 +24,19 @@ export class Request extends Base {
 
         // thiet lập headers
         this.#headers = headers
+    }
+
+    /**singleton */
+    public static getInstanceByHost(
+        host: keyof typeof DOMAIN, 
+        headers?: RawAxiosRequestHeaders
+    ): Request {
+        // nếu chưa có instance thì tạo mới
+        if (!Request.#instance?.[host])
+            Request.#instance[host] = new Request(host, headers)
+
+        // trả về instance
+        return Request.#instance?.[host]
     }
 
     /**thay đổi giá trị header mặc định */
@@ -59,8 +75,8 @@ export class Request extends Base {
 }
 
 /**máy chủ chính */
-export const APP_SERVER = Request.getInstance<Request>('APP')
+export const APP_SERVER = Request.getInstanceByHost('APP')
 /**máy chủ phụ */
-export const WIDGET_SERVER = Request.getInstance<Request>('WIDGET')
+export const WIDGET_SERVER = Request.getInstanceByHost('WIDGET')
 /**máy chủ chatbot */
-export const CHATBOT_SERVER = Request.getInstance<Request>('CHATBOT')
+export const CHATBOT_SERVER = Request.getInstanceByHost('CHATBOT')
