@@ -24,7 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _Request_instances, _a, _Request_HOST, _Request_headers, _Request_instance, _Request_genUri, _Request_genOptions;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CHATBOT_SERVER = exports.WIDGET_SERVER = exports.APP_SERVER = exports.Request = void 0;
+exports.APP_SERVER_V2 = exports.CHATBOT_SERVER = exports.WIDGET_SERVER = exports.APP_SERVER = exports.Request = void 0;
 const axios_1 = __importDefault(require("axios"));
 const base_1 = require("./base");
 const constant_1 = require("../constant");
@@ -91,3 +91,5 @@ exports.APP_SERVER = Request.getInstanceByHost('APP');
 exports.WIDGET_SERVER = Request.getInstanceByHost('WIDGET');
 /**máy chủ chatbot */
 exports.CHATBOT_SERVER = Request.getInstanceByHost('CHATBOT');
+/**máy chủ chính v2 */
+exports.APP_SERVER_V2 = Request.getInstanceByHost('APPv2');

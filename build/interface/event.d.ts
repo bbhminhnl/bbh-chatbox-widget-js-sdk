@@ -8,5 +8,9 @@ export interface ChatboxEvent {
     payload?: {
         /**token mới */
         access_token?: string;
+        /** token v2 */
+        partner_token?: string;
+        /** id khách hàng */
+        client_id?: string;
     };
 }

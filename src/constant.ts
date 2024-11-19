@@ -5,5 +5,7 @@ export const DOMAIN = {
     /**Địa chỉ miền của Chatbox Widget */
     WIDGET: 'https://chatbox-widget.botbanhang.vn/v1',
     /**Địa chỉ miền của Chatbot */
-    CHATBOT: 'https://chatbot-api.botbanhang.vn'
+    CHATBOT: 'https://chatbot-api.botbanhang.vn',
+    /** Địa chỉn miền ứng dụng Chatbox version 2 */
+    APPv2:'https://chatbox-app-v2.botbanhang.vn'
 }

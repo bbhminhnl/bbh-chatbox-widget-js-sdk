@@ -7,26 +7,40 @@ export declare class WidgetCore extends Base {
     protected _secret_key?: string;
     /**mã truy cập để oauth hoặc giải mã dữ liệu */
     protected _access_token?: string;
+    /** mã truy cập mới để oauth hoặc giải mã dữ liệu */
+    protected _partner_token?: string;
     /**nhân viên hiện tại có phải là admin của trang không */
     protected _is_admin?: boolean;
     /**ID của trang đang được chọn */
     protected _page_id?: string;
     /**ID của khách hàng đang được chọn */
     protected _client_id?: string;
+    /**ID của tin nhắn đã chọn */
+    protected _message_id?: string;
     /**token của chatbot */
     protected _chatbot_token?: string;
     /**lấy ra dữ liệu mã truy cập hiện tại */
     get access_token(): string | undefined;
+    /**lấy ra dữ liệu mã truy cập mới */
+    get partner_token(): string | undefined;
+    /** lấy ra id của khách hàng */
+    get client_id(): string | undefined;
     /**nhân viên có phải là admin không */
     get is_admin(): boolean | undefined;
     /**thay đổi giá trị của mã truy cập thủ công */
     set access_token(value: string | undefined);
+    /**thay đổi giá trị của mã truy cập mới */
+    set partner_token(value: string | undefined);
+    /** thay đổi id của khách hàng */
+    set client_id(value: string | undefined);
     /**khởi động widget chatbox */
     load(secret_key: string): void;
     /**thực hiện xác thực với Bot Bán Hàng */
     oAuth(token_partner?: string): Promise<any>;
     /**giải mã thông tin khách hàng */
     decodeClient(): Promise<CustomerInfo>;
+    /** giải mã thông tin khách hàng version 2*/
+    decodeClientV2(): Promise<CustomerInfo>;
     /**nạp lại access_token mỗi khi thay đổi khách hàng trong trang */
     onEvent(proceed?: Function): void;
 }

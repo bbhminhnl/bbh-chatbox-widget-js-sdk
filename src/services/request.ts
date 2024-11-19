@@ -80,3 +80,5 @@ export const APP_SERVER = Request.getInstanceByHost('APP')
 export const WIDGET_SERVER = Request.getInstanceByHost('WIDGET')
 /**máy chủ chatbot */
 export const CHATBOT_SERVER = Request.getInstanceByHost('CHATBOT')
+/**máy chủ chính v2 */
+export const APP_SERVER_V2 = Request.getInstanceByHost('APPv2')

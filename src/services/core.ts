@@ -1,5 +1,5 @@
 import { Base } from './base'
-import { APP_SERVER, WIDGET_SERVER } from './request'
+import { APP_SERVER, APP_SERVER_V2, WIDGET_SERVER } from './request'
 
 import type { ChatboxEvent, CustomerInfo } from '../interface'
 
@@ -9,17 +9,26 @@ export class WidgetCore extends Base {
     protected _secret_key?: string
     /**mã truy cập để oauth hoặc giải mã dữ liệu */
     protected _access_token?: string
+    /** mã truy cập mới để oauth hoặc giải mã dữ liệu */
+    protected _partner_token?: string
     /**nhân viên hiện tại có phải là admin của trang không */
     protected _is_admin?: boolean
     /**ID của trang đang được chọn */
     protected _page_id?: string
     /**ID của khách hàng đang được chọn */
     protected _client_id?: string
+    /**ID của tin nhắn đã chọn */
+    protected _message_id?: string
     /**token của chatbot */
     protected _chatbot_token?: string
 
     /**lấy ra dữ liệu mã truy cập hiện tại */
     get access_token() { return this._access_token }
+    /**lấy ra dữ liệu mã truy cập mới */
+    get partner_token() { return this._partner_token }
+    /** lấy ra id của khách hàng */
+    get client_id() { return this._client_id }
+
     /**nhân viên có phải là admin không */
     get is_admin() { return this._is_admin }
     /**thay đổi giá trị của mã truy cập thủ công */
@@ -31,11 +40,27 @@ export class WidgetCore extends Base {
         WIDGET_SERVER.headers = { Authorization: this._access_token }
     }
 
+    /**thay đổi giá trị của mã truy cập mới */
+    set partner_token(value: string | undefined) {
+        // cập nhật giá trị mới
+        this._partner_token = value
+    }
+
+    /** thay đổi id của khách hàng */
+    set client_id(value: string | undefined) {
+        // cập nhật giá trị mới
+        this._client_id = value
+    }
+
     /**Lấy giá trị của trường query từ URL */
     static #getQueryString(field: string): string | null {
-        return new URLSearchParams(
+        const VALUE = new URLSearchParams(
             globalThis.window?.location?.search
         ).get(field)
+
+        /** nếu giá trị lấy từ param bằng chuỗi undefined thì trả về null */
+        if(VALUE === 'undefined') return null
+        return VALUE
     }
     /**Chuyển đổi giá trị thành kiểu boolean */
     static #toBoolean(value?: any): boolean {
@@ -61,6 +86,57 @@ export class WidgetCore extends Base {
             this.debug('Đã phát hiện mã truy cập', this._access_token)
         } catch (e) {
             throw e
+        }
+    }
+    /** nạp partner_token trên query string */
+    #loadPartnerToken(): void {
+        try {
+            /**lấy mã partner_token trong query string */
+            const PARTNER_TOKEN = WidgetCore.#getQueryString('partner_token')
+
+            // kiểm tra đầu vào
+            if (!PARTNER_TOKEN) return
+
+            // nạp dữ liệu partner_token
+            this.partner_token = PARTNER_TOKEN
+
+            this.debug('Đã phát hiện partner_token', this._partner_token)
+        } catch (e) {
+            throw e
+        }
+    }
+    /** nap ID khách hàng từ query string ban đầu */
+    #loadClientId(): void {
+        try {
+            /**lấy ID khách hàng từ query string */
+            const CLIENT_ID = WidgetCore.#getQueryString('client_id')
+
+            // kiểm tra đầu vào
+            if (!CLIENT_ID) throw 'Không tìm thấy ID khách hàng'
+
+            // nạp dữ liệu ID khách hàng
+            this._client_id = CLIENT_ID
+
+            this.debug('Đã phát hiện ID khách hàng', this._client_id)
+        } catch (e) {
+            throw e
+        }
+    }
+    /** nahp ID tin nhắn từ query string ban đầu */
+    #loadMessageId(): void {
+        try {
+            /**lấy ID tin nhắn từ query string */
+            const MESSAGE_ID = WidgetCore.#getQueryString('message_id')
+
+            // kiểm tra đầu vào
+            if (!MESSAGE_ID) return
+
+            // nạp dữ liệu ID tin nhắn
+            this._message_id = MESSAGE_ID
+
+            this.debug('Đã phát hiện ID tin nhắn', this._message_id)
+        } catch (e) {
+            // throw e
         }
     }
     /**nạp trạng thái admin trang ban đầu */
@@ -93,6 +169,15 @@ export class WidgetCore extends Base {
 
             // nạp access_token từ query string
             this.#loadAccessToken()
+
+            // nạp partner_token trên query string
+            this.#loadPartnerToken()
+
+            // nạp ID khách hàng từ query string
+            this.#loadClientId()
+
+            // nạp ID tin nhắn từ query string
+            this.#loadMessageId()
 
             // nạp trạng thái admin trang ban đầu
             this.#loadAdminStatus()
@@ -161,6 +246,37 @@ export class WidgetCore extends Base {
             throw e
         }
     }
+
+    /** giải mã thông tin khách hàng version 2*/
+    public async decodeClientV2(): Promise<CustomerInfo> {
+        try {
+            this.debug('Thực hiện giải má khách hàng')
+
+            /**dữ liệu giải mã được */
+            const RES: CustomerInfo = await APP_SERVER_V2.post(
+                'partner/widget/client_info',
+                {
+                    access_token: this._partner_token,
+                    client_id: this._client_id,
+                    message_id: this._message_id,
+                    secret_key: this._secret_key
+                },
+            )
+
+            // lưu lại id của khách hàng hiện tại
+            this._client_id = RES?.public_profile?.fb_client_id
+
+            this.debug('Giải má khách hàng', RES)
+
+            return RES
+        } catch (e) {
+            this.error('Giải má khách hàng thất bại', e)
+
+            // trả về lỗi
+            throw e
+        }
+    }
+
     /**nạp lại access_token mỗi khi thay đổi khách hàng trong trang */
     public onEvent(proceed?: Function): void {
         this.debug('Bắt đầu lắng nghe sự kiện thay đổi khách hàng')
@@ -181,6 +297,12 @@ export class WidgetCore extends Base {
                 ) {
                     // nạp lại mã truy cập
                     this.access_token = $event?.data?.payload?.access_token
+
+                    // nạp lại mã truy cập mới
+                    this.partner_token = $event?.data?.payload?.partner_token
+
+                    // nạp lại id khách hàng
+                    this.client_id = $event?.data?.payload?.client_id
 
                     this.debug('Đã nạp lại mã truy cập')
                 }

@@ -18,3 +18,5 @@ export declare const APP_SERVER: Request;
 export declare const WIDGET_SERVER: Request;
 /**máy chủ chatbot */
 export declare const CHATBOT_SERVER: Request;
+/**máy chủ chính v2 */
+export declare const APP_SERVER_V2: Request;
