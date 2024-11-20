@@ -7,9 +7,9 @@ import type { ChatboxEvent, CustomerInfo } from '../interface'
 export class WidgetCore extends Base {
     /**khóa bí mật của widget, dùng để xác thực khi giải mã dữ liệu khách hàng */
     protected _secret_key?: string
-    /**mã truy cập để oauth hoặc giải mã dữ liệu */
+    /** mã truy cập để oauth hoặc giải mã dữ liệu bản cũ*/
     protected _access_token?: string
-    /** mã truy cập mới để oauth hoặc giải mã dữ liệu */
+    /** mã truy cập mới để oauth hoặc giải mã dữ liệu bản mới */
     protected _partner_token?: string
     /**nhân viên hiện tại có phải là admin của trang không */
     protected _is_admin?: boolean
@@ -22,13 +22,14 @@ export class WidgetCore extends Base {
     /**token của chatbot */
     protected _chatbot_token?: string
 
-    /**lấy ra dữ liệu mã truy cập hiện tại */
+    /**lấy ra dữ liệu mã truy cập hiện tại của bản cũ*/
     get access_token() { return this._access_token }
-    /**lấy ra dữ liệu mã truy cập mới */
+    /**lấy ra dữ liệu mã truy cập hiện tại của bản mới */
     get partner_token() { return this._partner_token }
     /** lấy ra id của khách hàng */
     get client_id() { return this._client_id }
-
+    /** lấy ra id của tin nhắn */
+    get message_id() { return this._message_id }
     /**nhân viên có phải là admin không */
     get is_admin() { return this._is_admin }
     /**thay đổi giá trị của mã truy cập thủ công */
@@ -50,6 +51,12 @@ export class WidgetCore extends Base {
     set client_id(value: string | undefined) {
         // cập nhật giá trị mới
         this._client_id = value
+    }
+
+    /** thay đổi id của tin nhắn */
+    set message_id(value: string | undefined) {
+        // cập nhật giá trị mới
+        this._message_id = value
     }
 
     /**Lấy giá trị của trường query từ URL */
@@ -215,7 +222,10 @@ export class WidgetCore extends Base {
             throw e
         }
     }
-    /**giải mã thông tin khách hàng */
+    /** 
+     * giải mã thông tin khách hàng 
+     * @deprecated dùng sang phương thức getClientInfo 
+     * */
     public async decodeClient(): Promise<CustomerInfo> {
         try {
             this.debug('Thực hiện giải mã thông tin khách hàng')
@@ -247,8 +257,8 @@ export class WidgetCore extends Base {
         }
     }
 
-    /** giải mã thông tin khách hàng version 2*/
-    public async decodeClientV2(): Promise<CustomerInfo> {
+    /** giải mã thông tin khách hàng bản mới*/
+    public async getClientInfo(): Promise<CustomerInfo> {
         try {
             this.debug('Thực hiện giải má khách hàng')
 
@@ -266,11 +276,11 @@ export class WidgetCore extends Base {
             // lưu lại id của khách hàng hiện tại
             this._client_id = RES?.public_profile?.fb_client_id
 
-            this.debug('Giải má khách hàng', RES)
+            this.debug('Giải mã khách hàng bản mới thành công', RES)
 
             return RES
         } catch (e) {
-            this.error('Giải má khách hàng thất bại', e)
+            this.error('Giải mã khách hàng bản mới thất bại', e)
 
             // trả về lỗi
             throw e
@@ -292,17 +302,31 @@ export class WidgetCore extends Base {
 
                 // nạp lại mã truy cập mới
                 if (
-                    $event?.data?.type === 'RELOAD' &&
-                    $event?.data?.payload?.access_token
+                    $event?.data?.type === 'RELOAD'
                 ) {
-                    // nạp lại mã truy cập
-                    this.access_token = $event?.data?.payload?.access_token
+                    /** id mã truy cập bản cũ được gửi từ event của chatbox */
+                    const NEW_ACCESS_TOKEN = $event?.data?.payload?.access_token
 
-                    // nạp lại mã truy cập mới
-                    this.partner_token = $event?.data?.payload?.partner_token
+                    /** id mã truy cập bản mới được gửi từ event của chatbox */
+                    const NEW_PARTNER_TOKEN = $event?.data?.payload?.partner_token
+
+                    /** id khách hàng được gửi từ event của chatbox */
+                    const NEW_CLIENT_ID = $event?.data?.payload?.client_id
+
+                    /** id tin nhắn được gửi từ event của chatbox */
+                    const NEW_MESSAGE_ID = $event?.data?.payload?.message_id
+
+                    // nạp lại mã truy cập bản cũ
+                    if(NEW_ACCESS_TOKEN) this.access_token = NEW_ACCESS_TOKEN
+
+                    // nạp lại mã truy cập bản mới
+                    if(NEW_PARTNER_TOKEN) this.partner_token = NEW_PARTNER_TOKEN
 
                     // nạp lại id khách hàng
-                    this.client_id = $event?.data?.payload?.client_id
+                    if(NEW_CLIENT_ID) this.client_id = NEW_CLIENT_ID
+
+                    // nạp lại id của tin nhắn
+                    if(NEW_MESSAGE_ID) this.message_id = NEW_MESSAGE_ID
 
                     this.debug('Đã nạp lại mã truy cập')
                 }

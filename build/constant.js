@@ -10,5 +10,5 @@ exports.DOMAIN = {
     /**Địa chỉ miền của Chatbot */
     CHATBOT: 'https://chatbot-api.botbanhang.vn',
     /** Địa chỉn miền ứng dụng Chatbox version 2 */
-    APPv2: 'https://chatbox-app-v2.botbanhang.vn'
+    APP_V2: 'https://chatbox-app-v2.botbanhang.vn'
 };

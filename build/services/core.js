@@ -24,12 +24,14 @@ class WidgetCore extends base_1.Base {
         super(...arguments);
         _WidgetCore_instances.add(this);
     }
-    /**lấy ra dữ liệu mã truy cập hiện tại */
+    /**lấy ra dữ liệu mã truy cập hiện tại của bản cũ*/
     get access_token() { return this._access_token; }
-    /**lấy ra dữ liệu mã truy cập mới */
+    /**lấy ra dữ liệu mã truy cập hiện tại của bản mới */
     get partner_token() { return this._partner_token; }
     /** lấy ra id của khách hàng */
     get client_id() { return this._client_id; }
+    /** lấy ra id của tin nhắn */
+    get message_id() { return this._message_id; }
     /**nhân viên có phải là admin không */
     get is_admin() { return this._is_admin; }
     /**thay đổi giá trị của mã truy cập thủ công */
@@ -48,6 +50,11 @@ class WidgetCore extends base_1.Base {
     set client_id(value) {
         // cập nhật giá trị mới
         this._client_id = value;
+    }
+    /** thay đổi id của tin nhắn */
+    set message_id(value) {
+        // cập nhật giá trị mới
+        this._message_id = value;
     }
     /**khởi động widget chatbox */
     load(secret_key) {
@@ -96,7 +103,10 @@ class WidgetCore extends base_1.Base {
             }
         });
     }
-    /**giải mã thông tin khách hàng */
+    /**
+     * giải mã thông tin khách hàng
+     * @deprecated dùng sang phương thức getClientInfo
+     * */
     decodeClient() {
         var _b;
         return __awaiter(this, void 0, void 0, function* () {
@@ -122,8 +132,8 @@ class WidgetCore extends base_1.Base {
             }
         });
     }
-    /** giải mã thông tin khách hàng version 2*/
-    decodeClientV2() {
+    /** giải mã thông tin khách hàng bản mới*/
+    getClientInfo() {
         var _b;
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -137,11 +147,11 @@ class WidgetCore extends base_1.Base {
                 });
                 // lưu lại id của khách hàng hiện tại
                 this._client_id = (_b = RES === null || RES === void 0 ? void 0 : RES.public_profile) === null || _b === void 0 ? void 0 : _b.fb_client_id;
-                this.debug('Giải má khách hàng', RES);
+                this.debug('Giải mã khách hàng bản mới thành công', RES);
                 return RES;
             }
             catch (e) {
-                this.error('Giải má khách hàng thất bại', e);
+                this.error('Giải mã khách hàng bản mới thất bại', e);
                 // trả về lỗi
                 throw e;
             }
@@ -158,14 +168,27 @@ class WidgetCore extends base_1.Base {
                 return;
             this.debug('Nhận được sự kiện từ Chatbox', $event === null || $event === void 0 ? void 0 : $event.data);
             // nạp lại mã truy cập mới
-            if (((_c = $event === null || $event === void 0 ? void 0 : $event.data) === null || _c === void 0 ? void 0 : _c.type) === 'RELOAD' &&
-                ((_e = (_d = $event === null || $event === void 0 ? void 0 : $event.data) === null || _d === void 0 ? void 0 : _d.payload) === null || _e === void 0 ? void 0 : _e.access_token)) {
-                // nạp lại mã truy cập
-                this.access_token = (_g = (_f = $event === null || $event === void 0 ? void 0 : $event.data) === null || _f === void 0 ? void 0 : _f.payload) === null || _g === void 0 ? void 0 : _g.access_token;
-                // nạp lại mã truy cập mới
-                this.partner_token = (_j = (_h = $event === null || $event === void 0 ? void 0 : $event.data) === null || _h === void 0 ? void 0 : _h.payload) === null || _j === void 0 ? void 0 : _j.partner_token;
+            if (((_c = $event === null || $event === void 0 ? void 0 : $event.data) === null || _c === void 0 ? void 0 : _c.type) === 'RELOAD') {
+                /** id mã truy cập bản cũ được gửi từ event của chatbox */
+                const NEW_ACCESS_TOKEN = (_e = (_d = $event === null || $event === void 0 ? void 0 : $event.data) === null || _d === void 0 ? void 0 : _d.payload) === null || _e === void 0 ? void 0 : _e.access_token;
+                /** id mã truy cập bản mới được gửi từ event của chatbox */
+                const NEW_PARTNER_TOKEN = (_g = (_f = $event === null || $event === void 0 ? void 0 : $event.data) === null || _f === void 0 ? void 0 : _f.payload) === null || _g === void 0 ? void 0 : _g.partner_token;
+                /** id khách hàng được gửi từ event của chatbox */
+                const NEW_CLIENT_ID = (_j = (_h = $event === null || $event === void 0 ? void 0 : $event.data) === null || _h === void 0 ? void 0 : _h.payload) === null || _j === void 0 ? void 0 : _j.client_id;
+                /** id tin nhắn được gửi từ event của chatbox */
+                const NEW_MESSAGE_ID = (_l = (_k = $event === null || $event === void 0 ? void 0 : $event.data) === null || _k === void 0 ? void 0 : _k.payload) === null || _l === void 0 ? void 0 : _l.message_id;
+                // nạp lại mã truy cập bản cũ
+                if (NEW_ACCESS_TOKEN)
+                    this.access_token = NEW_ACCESS_TOKEN;
+                // nạp lại mã truy cập bản mới
+                if (NEW_PARTNER_TOKEN)
+                    this.partner_token = NEW_PARTNER_TOKEN;
                 // nạp lại id khách hàng
-                this.client_id = (_l = (_k = $event === null || $event === void 0 ? void 0 : $event.data) === null || _k === void 0 ? void 0 : _k.payload) === null || _l === void 0 ? void 0 : _l.client_id;
+                if (NEW_CLIENT_ID)
+                    this.client_id = NEW_CLIENT_ID;
+                // nạp lại id của tin nhắn
+                if (NEW_MESSAGE_ID)
+                    this.message_id = NEW_MESSAGE_ID;
                 this.debug('Đã nạp lại mã truy cập');
             }
             // gọi hàm tiếp theo nếu có

@@ -92,4 +92,4 @@ exports.WIDGET_SERVER = Request.getInstanceByHost('WIDGET');
 /**máy chủ chatbot */
 exports.CHATBOT_SERVER = Request.getInstanceByHost('CHATBOT');
 /**máy chủ chính v2 */
-exports.APP_SERVER_V2 = Request.getInstanceByHost('APPv2');
+exports.APP_SERVER_V2 = Request.getInstanceByHost('APP_V2');

@@ -6,11 +6,13 @@ export interface ChatboxEvent {
     type?: 'RELOAD'
     /**dữ liệu kèm theo */
     payload?: {
-        /**token mới */
+        /**token bản cũ */
         access_token?: string
-        /** token v2 */
+        /** token bản mới */
         partner_token?: string
         /** id khách hàng */
         client_id?: string
+        /** id của tin nhắn */
+        message_id?: string
     }
 }

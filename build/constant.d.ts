@@ -7,5 +7,5 @@ export declare const DOMAIN: {
     /**Địa chỉ miền của Chatbot */
     CHATBOT: string;
     /** Địa chỉn miền ứng dụng Chatbox version 2 */
-    APPv2: string;
+    APP_V2: string;
 };
