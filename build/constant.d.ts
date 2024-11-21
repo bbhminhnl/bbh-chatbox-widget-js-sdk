@@ -6,4 +6,6 @@ export declare const DOMAIN: {
     WIDGET: string;
     /**Địa chỉ miền của Chatbot */
     CHATBOT: string;
+    /** Địa chỉn miền ứng dụng Chatbox version 2 */
+    APP_V2: string;
 };

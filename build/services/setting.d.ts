@@ -4,11 +4,11 @@ import type { ConfigBase, ProxyInput, SaveConfig } from "../interface";
 export declare class WidgetConfig extends WidgetCore {
     #private;
     /**lưu cấu hình của widget */
-    saveConfig(data: SaveConfig): Promise<void>;
+    saveConfig(data: SaveConfig): Promise<any>;
     /**Xóa thiết lập */
-    deleteConfig(input: ConfigBase): Promise<void>;
+    deleteConfig(input: ConfigBase): Promise<any>;
     /**đọc thiết lập */
-    getConfig(data: ConfigBase): Promise<void>;
+    getConfig(data: ConfigBase): Promise<any>;
     /**proxy API thông qua server để tránh CORS */
     proxy(input: ProxyInput): Promise<any>;
 }

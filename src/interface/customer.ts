@@ -1,3 +1,5 @@
+import { IDataAI } from "./ai"
+
 /**dữ liệu khách hàng giải mã được*/
 export interface CustomerInfo {
     /**thông tin cơ bản của khách hàng */
@@ -18,6 +20,8 @@ export interface CustomerInfo {
         current_staff_name?: string
         /**id của quảng cáo cuối cùng */
         last_ad_id?: string
+        /** dữ liệu ai */
+        ai: IDataAI[]
     }
     /**thông tin liên hệ của khách hàng */
     conversation_contact?: {
