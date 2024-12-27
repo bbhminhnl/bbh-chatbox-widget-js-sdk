@@ -119,7 +119,10 @@ export class WidgetCore extends Base {
             const CLIENT_ID = WidgetCore.#getQueryString('client_id')
 
             // kiểm tra đầu vào
-            if (!CLIENT_ID) throw 'Không tìm thấy ID khách hàng'
+            if (!CLIENT_ID && this._partner_token) throw 'Không tìm thấy ID khách hàng'
+
+            // nếu không có client_id thì thôi
+            if(!CLIENT_ID) return
 
             // nạp dữ liệu ID khách hàng
             this._client_id = CLIENT_ID
