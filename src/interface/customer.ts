@@ -21,7 +21,7 @@ export interface CustomerInfo {
         /**id của quảng cáo cuối cùng */
         last_ad_id?: string
         /** dữ liệu ai */
-        ai: IDataAI[]
+        ai?: IDataAI[]
     }
     /**thông tin liên hệ của khách hàng */
     conversation_contact?: {

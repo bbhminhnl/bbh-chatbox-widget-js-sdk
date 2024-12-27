@@ -245,8 +245,11 @@ _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryStri
         /**lấy ID khách hàng từ query string */
         const CLIENT_ID = __classPrivateFieldGet(WidgetCore, _a, "m", _WidgetCore_getQueryString).call(WidgetCore, 'client_id');
         // kiểm tra đầu vào
-        if (!CLIENT_ID)
+        if (!CLIENT_ID && this._partner_token)
             throw 'Không tìm thấy ID khách hàng';
+        // nếu không có client_id thì thôi
+        if (!CLIENT_ID)
+            return;
         // nạp dữ liệu ID khách hàng
         this._client_id = CLIENT_ID;
         this.debug('Đã phát hiện ID khách hàng', this._client_id);
