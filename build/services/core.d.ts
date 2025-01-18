@@ -17,6 +17,8 @@ export declare class WidgetCore extends Base {
     protected _client_id?: string;
     /**ID của tin nhắn đã chọn */
     protected _message_id?: string;
+    /**ID của bình luận đã chọn */
+    protected _comment_id?: string;
     /**token của chatbot */
     protected _chatbot_token?: string;
     /**lấy ra dữ liệu mã truy cập hiện tại của bản cũ*/
@@ -27,6 +29,8 @@ export declare class WidgetCore extends Base {
     get client_id(): string | undefined;
     /** lấy ra id của tin nhắn */
     get message_id(): string | undefined;
+    /** lấy ra id của bình luận */
+    get comment_id(): string | undefined;
     /**nhân viên có phải là admin không */
     get is_admin(): boolean | undefined;
     /**thay đổi giá trị của mã truy cập thủ công */
@@ -37,6 +41,8 @@ export declare class WidgetCore extends Base {
     set client_id(value: string | undefined);
     /** thay đổi id của tin nhắn */
     set message_id(value: string | undefined);
+    /** thay đổi id của bình luận */
+    set comment_id(value: string | undefined);
     /**khởi động widget chatbox */
     load(secret_key: string): void;
     /**thực hiện xác thực với Bot Bán Hàng */

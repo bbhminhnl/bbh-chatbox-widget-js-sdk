@@ -19,6 +19,8 @@ export class WidgetCore extends Base {
     protected _client_id?: string
     /**ID của tin nhắn đã chọn */
     protected _message_id?: string
+    /**ID của bình luận đã chọn */
+    protected _comment_id?: string
     /**token của chatbot */
     protected _chatbot_token?: string
 
@@ -30,6 +32,8 @@ export class WidgetCore extends Base {
     get client_id() { return this._client_id }
     /** lấy ra id của tin nhắn */
     get message_id() { return this._message_id }
+    /** lấy ra id của bình luận */
+    get comment_id() { return this._comment_id }
     /**nhân viên có phải là admin không */
     get is_admin() { return this._is_admin }
     /**thay đổi giá trị của mã truy cập thủ công */
@@ -57,6 +61,12 @@ export class WidgetCore extends Base {
     set message_id(value: string | undefined) {
         // cập nhật giá trị mới
         this._message_id = value
+    }
+
+    /** thay đổi id của bình luận */
+    set comment_id(value: string | undefined) {
+        // cập nhật giá trị mới
+        this._comment_id = value
     }
 
     /**Lấy giá trị của trường query từ URL */
@@ -132,7 +142,7 @@ export class WidgetCore extends Base {
             throw e
         }
     }
-    /** nahp ID tin nhắn từ query string ban đầu */
+    /** nạp ID tin nhắn từ query string ban đầu */
     #loadMessageId(): void {
         try {
             /**lấy ID tin nhắn từ query string */
@@ -145,6 +155,23 @@ export class WidgetCore extends Base {
             this._message_id = MESSAGE_ID
 
             this.debug('Đã phát hiện ID tin nhắn', this._message_id)
+        } catch (e) {
+            // throw e
+        }
+    }
+    /**nạp ID bình luận từ query string ban đầu */
+    #loadCommentId(): void {
+        try {
+            /**lấy ID bình luận từ query string */
+            const COMMENT_ID = WidgetCore.#getQueryString('comment_id')
+
+            // kiểm tra đầu vào
+            if (!COMMENT_ID) return
+
+            // nạp dữ liệu ID bình luận
+            this._comment_id = COMMENT_ID
+
+            this.debug('Đã phát hiện ID bình luận', this._comment_id)
         } catch (e) {
             // throw e
         }
@@ -188,6 +215,9 @@ export class WidgetCore extends Base {
 
             // nạp ID tin nhắn từ query string
             this.#loadMessageId()
+
+            // nạp ID bình luận từ query string
+            this.#loadCommentId()
 
             // nạp trạng thái admin trang ban đầu
             this.#loadAdminStatus()
@@ -272,6 +302,7 @@ export class WidgetCore extends Base {
                     access_token: this._partner_token,
                     client_id: this._client_id,
                     message_id: this._message_id,
+                    comment_id: this._comment_id,
                     secret_key: this._secret_key
                 },
             )
@@ -319,6 +350,9 @@ export class WidgetCore extends Base {
                     /** id tin nhắn được gửi từ event của chatbox */
                     const NEW_MESSAGE_ID = $event?.data?.payload?.message_id
 
+                    /** id của comment được gửi từ event của chatbox */
+                    const NEW_COMMENT_ID = $event?.data?.payload?.comment_id
+
                     // nạp lại mã truy cập bản cũ
                     if(NEW_ACCESS_TOKEN) this.access_token = NEW_ACCESS_TOKEN
 
@@ -330,6 +364,9 @@ export class WidgetCore extends Base {
 
                     // nạp lại id của tin nhắn
                     if(NEW_MESSAGE_ID) this.message_id = NEW_MESSAGE_ID
+
+                    // nạp lại id của comment
+                    if(NEW_COMMENT_ID) this.comment_id = NEW_COMMENT_ID
 
                     this.debug('Đã nạp lại mã truy cập')
                 }
