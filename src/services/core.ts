@@ -1,7 +1,7 @@
-import { Base } from './base'
 import { APP_SERVER, APP_SERVER_V2, WIDGET_SERVER } from './request'
-
 import type { ChatboxEvent, CustomerInfo } from '../interface'
+
+import { Base } from './base'
 
 /**quản lý tương tác giữa widget và nền tảng Chat - Bot Bán Hàng*/
 export class WidgetCore extends Base {
@@ -95,10 +95,10 @@ export class WidgetCore extends Base {
             const ACCESS_TOKEN = WidgetCore.#getQueryString('access_token')
 
             // kiểm tra đầu vào
-            if (!ACCESS_TOKEN) throw 'Không tìm thấy mã truy cập'
+            // if (!ACCESS_TOKEN) throw 'Không tìm thấy mã truy cập'
 
             // nạp dữ liệu mã truy cập
-            this.access_token = ACCESS_TOKEN
+            this.access_token = ACCESS_TOKEN || ''
 
             this.debug('Đã phát hiện mã truy cập', this._access_token)
         } catch (e) {
