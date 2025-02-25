@@ -21,6 +21,16 @@ export interface CustomerInfo {
         last_ad_id?: string;
         /** dữ liệu ai */
         ai?: IDataAI[];
+        /** ID của ai_agent */
+        ai_agent_id?: string;
+        /** user ID hiện tại */
+        current_user_id?: string;
+        /** fb page ID */
+        fb_page_id?: string;
+        /** Trạng thái kích hoạt AI Agent */
+        is_active_ai_agent?: boolean;
+        /** ID của Tổ chức */
+        org_id?: string;
     };
     /**thông tin liên hệ của khách hàng */
     conversation_contact?: {
@@ -38,7 +48,7 @@ export interface CustomerInfo {
         /**nội dung tin nhắn cuối cùng */
         last_message?: string;
         /**loại tin nhắn cuối cùng */
-        last_message_type?: 'page' | 'client';
+        last_message_type?: "page" | "client";
     };
     /**thông tin gắn nhãn */
     conversation_label?: {
