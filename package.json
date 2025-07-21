@@ -1,6 +1,6 @@
 {
   "name": "bbh-chatbox-widget-js-sdk",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Tích hợp với nền tảng Chat - Bot Bán Hàng",
   "main": "build/index.js",
   "types": "build/index.d.ts",
