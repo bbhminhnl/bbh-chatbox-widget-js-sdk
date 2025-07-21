@@ -14,5 +14,7 @@ export interface ChatboxEvent {
         client_id?: string
         /** id của tin nhắn */
         message_id?: string
+        /** id của bình luận */
+        comment_id?: string
     }
 }

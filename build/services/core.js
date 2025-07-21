@@ -13,7 +13,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _WidgetCore_instances, _a, _WidgetCore_getQueryString, _WidgetCore_toBoolean, _WidgetCore_loadAccessToken, _WidgetCore_loadPartnerToken, _WidgetCore_loadClientId, _WidgetCore_loadMessageId, _WidgetCore_loadAdminStatus;
+var _WidgetCore_instances, _a, _WidgetCore_getQueryString, _WidgetCore_toBoolean, _WidgetCore_loadAccessToken, _WidgetCore_loadPartnerToken, _WidgetCore_loadClientId, _WidgetCore_loadMessageId, _WidgetCore_loadCommentId, _WidgetCore_loadAdminStatus;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WidgetCore = void 0;
 const base_1 = require("./base");
@@ -32,6 +32,8 @@ class WidgetCore extends base_1.Base {
     get client_id() { return this._client_id; }
     /** lấy ra id của tin nhắn */
     get message_id() { return this._message_id; }
+    /** lấy ra id của bình luận */
+    get comment_id() { return this._comment_id; }
     /**nhân viên có phải là admin không */
     get is_admin() { return this._is_admin; }
     /**thay đổi giá trị của mã truy cập thủ công */
@@ -56,6 +58,11 @@ class WidgetCore extends base_1.Base {
         // cập nhật giá trị mới
         this._message_id = value;
     }
+    /** thay đổi id của bình luận */
+    set comment_id(value) {
+        // cập nhật giá trị mới
+        this._comment_id = value;
+    }
     /**khởi động widget chatbox */
     load(secret_key) {
         try {
@@ -72,6 +79,8 @@ class WidgetCore extends base_1.Base {
             __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadClientId).call(this);
             // nạp ID tin nhắn từ query string
             __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadMessageId).call(this);
+            // nạp ID bình luận từ query string
+            __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadCommentId).call(this);
             // nạp trạng thái admin trang ban đầu
             __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadAdminStatus).call(this);
             this.debug('Khởi động Widget thành công!');
@@ -143,6 +152,7 @@ class WidgetCore extends base_1.Base {
                     access_token: this._partner_token,
                     client_id: this._client_id,
                     message_id: this._message_id,
+                    comment_id: this._comment_id,
                     secret_key: this._secret_key
                 });
                 // lưu lại id của khách hàng hiện tại
@@ -162,7 +172,7 @@ class WidgetCore extends base_1.Base {
         this.debug('Bắt đầu lắng nghe sự kiện thay đổi khách hàng');
         // reload dữ liệu không cần load lại toàn bộ widget
         globalThis.window.addEventListener('message', ($event) => {
-            var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+            var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
             // chỉ xử lý event từ chatbox
             if (((_b = $event === null || $event === void 0 ? void 0 : $event.data) === null || _b === void 0 ? void 0 : _b.from) !== 'CHATBOX')
                 return;
@@ -177,6 +187,8 @@ class WidgetCore extends base_1.Base {
                 const NEW_CLIENT_ID = (_j = (_h = $event === null || $event === void 0 ? void 0 : $event.data) === null || _h === void 0 ? void 0 : _h.payload) === null || _j === void 0 ? void 0 : _j.client_id;
                 /** id tin nhắn được gửi từ event của chatbox */
                 const NEW_MESSAGE_ID = (_l = (_k = $event === null || $event === void 0 ? void 0 : $event.data) === null || _k === void 0 ? void 0 : _k.payload) === null || _l === void 0 ? void 0 : _l.message_id;
+                /** id của comment được gửi từ event của chatbox */
+                const NEW_COMMENT_ID = (_o = (_m = $event === null || $event === void 0 ? void 0 : $event.data) === null || _m === void 0 ? void 0 : _m.payload) === null || _o === void 0 ? void 0 : _o.comment_id;
                 // nạp lại mã truy cập bản cũ
                 if (NEW_ACCESS_TOKEN)
                     this.access_token = NEW_ACCESS_TOKEN;
@@ -189,6 +201,9 @@ class WidgetCore extends base_1.Base {
                 // nạp lại id của tin nhắn
                 if (NEW_MESSAGE_ID)
                     this.message_id = NEW_MESSAGE_ID;
+                // nạp lại id của comment
+                if (NEW_COMMENT_ID)
+                    this.comment_id = NEW_COMMENT_ID;
                 this.debug('Đã nạp lại mã truy cập');
             }
             // gọi hàm tiếp theo nếu có
@@ -267,6 +282,20 @@ _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryStri
         // nạp dữ liệu ID tin nhắn
         this._message_id = MESSAGE_ID;
         this.debug('Đã phát hiện ID tin nhắn', this._message_id);
+    }
+    catch (e) {
+        // throw e
+    }
+}, _WidgetCore_loadCommentId = function _WidgetCore_loadCommentId() {
+    try {
+        /**lấy ID bình luận từ query string */
+        const COMMENT_ID = __classPrivateFieldGet(WidgetCore, _a, "m", _WidgetCore_getQueryString).call(WidgetCore, 'comment_id');
+        // kiểm tra đầu vào
+        if (!COMMENT_ID)
+            return;
+        // nạp dữ liệu ID bình luận
+        this._comment_id = COMMENT_ID;
+        this.debug('Đã phát hiện ID bình luận', this._comment_id);
     }
     catch (e) {
         // throw e
