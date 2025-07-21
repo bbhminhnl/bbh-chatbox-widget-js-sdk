@@ -44,6 +44,11 @@ export class Request extends Base {
         this.#headers = value
     }
 
+    /** custom lại host domain */
+    set host(value: string) {
+        this.#HOST = value
+    }
+
     /**tạo ra URI hoàn chỉnh để gọi API */
     #genUri(path: string): string { return `${this.#HOST}/${path}` }
     /**tạo ra các options để gọi API */

@@ -1,7 +1,8 @@
 import { Base } from './base'
-import { APP_SERVER, APP_SERVER_V2, WIDGET_SERVER } from './request'
+import { APP_SERVER, APP_SERVER_V2, CHATBOT_SERVER, WIDGET_SERVER } from './request'
 
 import type { ChatboxEvent, CustomerInfo } from '../interface'
+import { DOMAIN } from '../constant'
 
 /**quản lý tương tác giữa widget và nền tảng Chat - Bot Bán Hàng*/
 export class WidgetCore extends Base {
@@ -168,14 +169,25 @@ export class WidgetCore extends Base {
         }
     }
 
+    /** nạp domain custom */
+    #loadDomain(domain: Record<keyof typeof DOMAIN, string>): void {
+        APP_SERVER.host = domain['APP']
+        WIDGET_SERVER.host = domain['WIDGET']
+        CHATBOT_SERVER.host = domain['CHATBOT']
+        APP_SERVER_V2.host = domain['APP_V2']
+    }
+
     /**khởi động widget chatbox */
-    public load(secret_key: string): void {
+    public load(secret_key: string, domain?: Record<keyof typeof DOMAIN, string>): void {
         try {
             // kiểm tra đầu vào
             if (!secret_key) throw 'Yêu cầu mã bí mật của widget'
 
             // nhập dữ liệu khoá bí mật
             this._secret_key = secret_key
+
+            // nạp domain custom
+            if (domain) this.#loadDomain(domain)
 
             // nạp access_token từ query string
             this.#loadAccessToken()
