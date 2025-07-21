@@ -1,4 +1,5 @@
 import { Base } from './base';
+import { DOMAIN } from '../constant';
 import type { CustomerInfo } from '../interface';
 /**quản lý tương tác giữa widget và nền tảng Chat - Bot Bán Hàng*/
 export declare class WidgetCore extends Base {
@@ -44,7 +45,7 @@ export declare class WidgetCore extends Base {
     /** thay đổi id của bình luận */
     set comment_id(value: string | undefined);
     /**khởi động widget chatbox */
-    load(secret_key: string): void;
+    load(secret_key: string, domain?: Record<keyof typeof DOMAIN, string>): void;
     /**thực hiện xác thực với Bot Bán Hàng */
     oAuth(token_partner?: string): Promise<any>;
     /**

@@ -56,6 +56,10 @@ class Request extends base_1.Base {
     set headers(value) {
         __classPrivateFieldSet(this, _Request_headers, value, "f");
     }
+    /** custom lại host domain */
+    set host(value) {
+        __classPrivateFieldSet(this, _Request_HOST, value, "f");
+    }
     /**gọi API theo phương thức POST */
     post(path, body) {
         var _b, _c, _d, _e;

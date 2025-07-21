@@ -9,6 +9,8 @@ export declare class Request extends Base {
     static getInstanceByHost(host: keyof typeof DOMAIN, headers?: RawAxiosRequestHeaders): Request;
     /**thay đổi giá trị header mặc định */
     set headers(value: RawAxiosRequestHeaders | undefined);
+    /** custom lại host domain */
+    set host(value: string);
     /**gọi API theo phương thức POST */
     post(path: string, body?: any): Promise<any>;
 }

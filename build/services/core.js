@@ -13,7 +13,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _WidgetCore_instances, _a, _WidgetCore_getQueryString, _WidgetCore_toBoolean, _WidgetCore_loadAccessToken, _WidgetCore_loadPartnerToken, _WidgetCore_loadClientId, _WidgetCore_loadMessageId, _WidgetCore_loadCommentId, _WidgetCore_loadAdminStatus;
+var _WidgetCore_instances, _a, _WidgetCore_getQueryString, _WidgetCore_toBoolean, _WidgetCore_loadAccessToken, _WidgetCore_loadPartnerToken, _WidgetCore_loadClientId, _WidgetCore_loadMessageId, _WidgetCore_loadCommentId, _WidgetCore_loadAdminStatus, _WidgetCore_loadDomain;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WidgetCore = void 0;
 const base_1 = require("./base");
@@ -64,13 +64,16 @@ class WidgetCore extends base_1.Base {
         this._comment_id = value;
     }
     /**khởi động widget chatbox */
-    load(secret_key) {
+    load(secret_key, domain) {
         try {
             // kiểm tra đầu vào
             if (!secret_key)
                 throw 'Yêu cầu mã bí mật của widget';
             // nhập dữ liệu khoá bí mật
             this._secret_key = secret_key;
+            // nạp domain custom
+            if (domain)
+                __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadDomain).call(this, domain);
             // nạp access_token từ query string
             __classPrivateFieldGet(this, _WidgetCore_instances, "m", _WidgetCore_loadAccessToken).call(this);
             // nạp partner_token trên query string
@@ -232,10 +235,9 @@ _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryStri
         /**lấy mã truy cập từ query string */
         const ACCESS_TOKEN = __classPrivateFieldGet(WidgetCore, _a, "m", _WidgetCore_getQueryString).call(WidgetCore, 'access_token');
         // kiểm tra đầu vào
-        if (!ACCESS_TOKEN)
-            throw 'Không tìm thấy mã truy cập';
+        // if (!ACCESS_TOKEN) throw 'Không tìm thấy mã truy cập'
         // nạp dữ liệu mã truy cập
-        this.access_token = ACCESS_TOKEN;
+        this.access_token = ACCESS_TOKEN || '';
         this.debug('Đã phát hiện mã truy cập', this._access_token);
     }
     catch (e) {
@@ -313,4 +315,9 @@ _a = WidgetCore, _WidgetCore_instances = new WeakSet(), _WidgetCore_getQueryStri
     catch (e) {
         throw e;
     }
+}, _WidgetCore_loadDomain = function _WidgetCore_loadDomain(domain) {
+    request_1.APP_SERVER.host = domain['APP'];
+    request_1.WIDGET_SERVER.host = domain['WIDGET'];
+    request_1.CHATBOT_SERVER.host = domain['CHATBOT'];
+    request_1.APP_SERVER_V2.host = domain['APP_V2'];
 };
